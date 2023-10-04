@@ -1,39 +1,40 @@
+import { useHttp } from "../hooks/http.hook";
 
-class MarvelService {
-    _apiBase = "https://gateway.marvel.com:443/v1/public/"; // "_" is telling to other coders that we shouldn't change this variable :)
-    _apiKey = "apikey=bf37833ffee3e5550d39fa910f710bf2";
-    _baseOffset = 260;
+const useMarvelService = () => {
+  const { loading, request, error, clearError } = useHttp();
 
-    getResource = async (url) => {
-        let res = await fetch(url);
+  const _apiBase = "https://gateway.marvel.com:443/v1/public/"; // "_" is telling to other coders that we shouldn't change this variable :)
+  const _apiKey = "apikey=bf37833ffee3e5550d39fa910f710bf2";
+  const _baseOffset = 260;
 
-        if (!res.ok) { // ok method tests if a given expression is true or not. If the expression evaluates to 0, or false, an assertion failure is being caused, and the program is terminated
-            throw new Error(`Could not fetch ${url}, status: ${res.status}`)
-        }
+  const getAllCharacters = async (offset = _baseOffset) => {
+    // if no arg is used, defaults to baseOffset
+    const res = await request(
+      `${_apiBase}characters?limit=9&offset=${offset}&${_apiKey}`
+    );
+    return res.data.results.map(_transformCharacter);
+  };
+  const getCharacter = async (id) => {
+    // This is an async function as we're waiting for the result from getResouce()
+    const res = await request(`${_apiBase}characters/${id}?&${_apiKey}`);
+    return _transformCharacter(res.data.results[0]); //Request only one character
+  };
 
-        return await res.json();
-    }
+  const _transformCharacter = (char) => {
+    return {
+      id: char.id,
+      name: char.name,
+      description: char.description
+        ? `${char.description.slice(0, 210)}...`
+        : "There is no description for this character",
+      thumbnail: char.thumbnail.path + "." + char.thumbnail.extension,
+      homepage: char.urls[0].url,
+      wiki: char.urls[1].url,
+      comics: char.comics.items,
+    };
+  };
 
-    getAllCharacters = async (offset = this._baseOffset) => { // if no arg is used, defaults to baseOffset
-        const res = await this.getResource(`${this._apiBase}characters?limit=9&offset=${offset}&${this._apiKey}`);
-        return res.data.results.map(this._transformCharacter)
-    }
-    getCharacter = async (id) => { // This is an async function as we're waiting for the result from getResouce()
-        const res = await this.getResource(`${this._apiBase}characters/${id}?&${this._apiKey}`);
-        return this._transformCharacter(res.data.results[0]); //Request only one character
-    }
+  return { loading, error, getAllCharacters, getCharacter, clearError };
+};
 
-    _transformCharacter = (char) => {
-        return {
-            id: char.id,
-            name: char.name,
-            description: char.description ? `${char.description.slice(0, 210)}...` : 'There is no description for this character',
-            thumbnail: char.thumbnail.path + '.' + char.thumbnail.extension,
-            homepage: char.urls[0].url,
-            wiki: char.urls[1].url,
-            comics: char.comics.items
-        }
-    }
-}
-
-export default MarvelService;
+export default useMarvelService;
