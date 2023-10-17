@@ -20,6 +20,7 @@ const CharList = (props) => {
   }, []);
 
   const onRequest = (offset, initial) => {
+    console.log("request called");
     initial ? setNewItemLoading(false) : setNewItemLoading(true);
     getAllCharacters(offset).then(onCharListLoaded);
   };
@@ -29,10 +30,10 @@ const CharList = (props) => {
     if (newCharList.length < 9) {
       end = true;
     }
-
-    setCharList((charList) => [...charList, ...newCharList]);
+    let charArr = [...charList, ...newCharList];
+    setCharList((charList) => charArr);
     setNewItemLoading(false);
-    setOffset((offset) => offset + 9);
+    setOffset(offset + 9);
     setCharEnded(end);
   };
 
