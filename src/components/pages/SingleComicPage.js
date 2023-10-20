@@ -1,38 +1,35 @@
 import { useState, useEffect } from "react";
+import { useParams, Link } from "react-router-dom";
 
 import useMarvelService from "../../services/MarvelService";
 import Spinner from "../spinner/Spinner";
 import ErrorMessage from "../errorMessage/ErrorMessage";
 
-import "./singleComic.scss";
+import "./singleComicPage.scss";
 
-const SingleComic = (props) => {
-  const [comics, setComics] = useState([]);
+const SingleComicPage = () => {
+  const [comic, setComic] = useState(null);
+  const { comicId } = useParams();
 
-  const { loading, error, getComics, clearError } = useMarvelService();
+  const { loading, error, getComic, clearError } = useMarvelService();
 
   useEffect(() => {
-    updateComics();
-  }, [props.comicsId]);
+    updateComic();
+  }, [comicId]);
 
-  const updateComics = () => {
-    const { comicsId } = props;
-    if (!comicsId) {
-      return;
-    }
-
+  const updateComic = () => {
     clearError();
-    getComics(comicsId).then(onComicsLoaded);
+    getComic(comicId).then(onComicLoaded);
   };
 
-  const onComicsLoaded = (comics) => {
-    setComics(comics);
+  const onComicLoaded = (comic) => {
+    setComic(comic);
   };
 
   const errorMessage = error ? <ErrorMessage /> : null;
   const spinner = loading ? <Spinner /> : null;
-  const content = !(loading || error || !comics) ? (
-    <View comics={comics} />
+  const content = !(loading || error || !comic) ? (
+    <View comics={comic} />
   ) : null;
 
   return (
@@ -54,14 +51,14 @@ const View = ({ comics }) => {
         <h2 className="single-comic__name">{title}</h2>
         <p className="single-comic__descr">{description}</p>
         <p className="single-comic__descr">{pageCount}</p>
-        <p className="single-comic__descr">{language}</p>
+        <p className="single-comic__descr">Language: {language}</p>
         <div className="single-comic__price">{price}</div>
       </div>
-      <a href="#" className="single-comic__back">
+      <Link to="/comics" className="single-comic__back">
         Back to all
-      </a>
+      </Link>
     </div>
   );
 };
 
-export default SingleComic;
+export default SingleComicPage;
