@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 
+import CharForm from "../charForm/CharForm";
 import useMarvelService from "../../services/MarvelService";
 import Spinner from "../spinner/Spinner";
 import ErrorMessage from "../errorMessage/ErrorMessage";
@@ -35,6 +36,7 @@ const CharInfo = (props) => {
   const errorMessage = error ? <ErrorMessage /> : null;
   const spinner = loading ? <Spinner /> : null;
   const content = !(loading || error || !char) ? <View char={char} /> : null;
+  const form = !(loading || error || !char) ? <CharForm /> : null;
 
   return (
     <div className="char__info">
@@ -42,6 +44,7 @@ const CharInfo = (props) => {
       {errorMessage}
       {spinner}
       {content}
+      {form}
     </div>
   );
 };
