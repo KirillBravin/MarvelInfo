@@ -16,9 +16,14 @@ const useMarvelService = () => {
   };
 
   const getCharacter = async (id) => {
-    // This is an async function as we're waiting for the result from getResouce()
+    // This is an async function as we're waiting for the result from getResource()
     const res = await request(`${_apiBase}characters/${id}?&${_apiKey}`);
     return _transformCharacter(res.data.results[0]); //Request only one character
+  };
+
+  const getCharacterByName = async (name) => {
+    const res = await request(`${_apiBase}characters?name=${name}&${_apiKey}`);
+    return res.data.results.map(_transformCharacter);
   };
 
   const getAllComics = async (offset = 0) => {
@@ -68,6 +73,7 @@ const useMarvelService = () => {
     error,
     getAllCharacters,
     getCharacter,
+    getCharacterByName,
     clearError,
     getAllComics,
     getComic,
