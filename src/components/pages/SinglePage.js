@@ -11,7 +11,7 @@ import AppBanner from "../appBanner/AppBanner";
 // А если вынесем их все в App.js - то они будут одни на все страницы
 
 const SinglePage = ({ Component, dataType }) => {
-  const { id } = useParams();
+  const { id } = useParams(); // Динамический адрес который потом используем чтобы найти персонажа или комикс
   const [data, setData] = useState(null);
   const { loading, error, getComic, getCharacter, clearError } =
     useMarvelService();
@@ -39,7 +39,7 @@ const SinglePage = ({ Component, dataType }) => {
   const errorMessage = error ? <ErrorMessage /> : null;
   const spinner = loading ? <Spinner /> : null;
   const content = !(loading || error || !data) ? (
-    <Component data={data} />
+    <Component data={data} /> //data - объект который получаем, либо character, либо comics
   ) : null;
 
   return (
